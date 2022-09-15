@@ -21,6 +21,28 @@ const retrieveData = async () => {
         }
     }
     const result = await axios.get( process.env.API_URL + "Patient?name=Pannagadhara", config);
+    let resourceResult = [];
+    result?.data?.entry?.forEach((rE, index) => {
+        if(resourceResult.length) {
+            if(resourceResult.find((oI) => oI.name == rE.resource.resourceType)) {
+                resourceResult.forEach((rR) => {
+                    if(rE.resource.resourceType == rR.name){
+                        rR.count++;
+                    }
+                })
+            } else {
+                resourceResult.push({
+                    name: rE.resource.resourceType,
+                    count: 1
+                })
+            }
+        } else if(!resourceResult.length) {
+            resourceResult.push({
+                name: rE.resource.resourceType,
+                count: 1
+            })
+        }
+    });
     console.log(result.data.entry);
     return result.data.entry;
 }
